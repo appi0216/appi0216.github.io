@@ -88,7 +88,7 @@ const pokemonList = [
 { id: 51, name: {Japanese:'アマージョ',English:'Tsareena'}, imageUrl: 'https://img.game8.co/3456947/d548f573a86ff0776adebd5f940408f5.png/show'},
 { id: 52, name: {Japanese:'ミミッキュ',English:'Mimikyu'}, imageUrl: 'https://img.game8.co/3749394/79600d4095d5c79108005b3aef236380.png/show'},
 { id: 53, name: {Japanese:'マッシブーン',English:'Buzzwole'}, imageUrl: 'https://img.game8.co/3556724/de369351425bdd25080e7510583a2315.png/show'},
-{ id: 54, name: {Japanese:'ウーラオス',English:'Urshifu'}, imageUrl: 'https://img.game8.co/3617989/b50e4a97f3291dcad7a85317e9eb2b47.png/show'}
+{ id: 54, name: {Japanese:'ウーラオス',English:'Urshifu'}, imageUrl: 'https://img.game8.co/3617989/b50e4a97f3291dcad7a85317e9eb2b47.png/show'},
 { id: 55, name: {Japanese:'タイレーツ',English:'Falinks'}, imageUrl: 'https://img.game8.co/3871849/ef5d1c031f6a54ade6867edaff11d66b.png/show'},
 { id: 56, name: {Japanese:'ザシアン',English:'Zacian'}, imageUrl: 'https://img.game8.co/3804966/2e27d97c1eb584a2e752e64ea043c4c0.png/show'},
 { id: 57, name: {Japanese:'ソウブレイズ',English:'Ceruledge'}, imageUrl: 'https://img.game8.co/3907753/9430a1bbd53154f6a613f24f7a0fe11f.png/show'},
