@@ -100,6 +100,8 @@ const pokemonList = [
 { id: 63, name: {Japanese:'ファイアロー',English:'Talonflame'}, imageUrl: 'https://img.game8.co/3408928/b0ceaa5d446346ecbacaede409186141.png/show'},
 { id: 64, name: {Japanese: 'ゼラオラ',English:'Zeraora'}, imageUrl: 'https://img.game8.co/3408933/c39cf9607996f8845ecdf1602ed7bef2.png/show'},
 { id: 65, name: {Japanese:'マスカーニャ',English:'Meawscarada'}, imageUrl: 'https://img.game8.co/3749396/716a21dc1d03d8ece2927f1dff6c72da.png/show'},
+
+
     // Add more Pokémon as needed
 ];
 
