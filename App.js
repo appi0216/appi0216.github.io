@@ -481,7 +481,7 @@ const pokemonList = [
   },
 
   // Add more Pokémon as needed
-]; //全ポケモン
+];
 
 // ドラフト順の設定
 const default_draft = [
@@ -503,19 +503,17 @@ const default_draft = [
 
 // メインコンポーネント
 const App = () => {
-  // 状態管理のフック
-  const [selectedType, setSelectedType] = useState("すべて"); // ポケモンタイプの選択状態
-  const [currentTeam, setCurrentTeam] = useState(default_draft[0][0]); // 現在のドラフト順のチーム
-  const [currentAction, setCurrentAction] = useState(default_draft[0][1]); // 現在のドラフトのアクション（BAN or PICK）
-  const [bans, setBans] = useState([]); // BANされたポケモンリスト
-  const [picks, setPicks] = useState([]); // PICKされたポケモンリスト
-  const [draftIndex, setDraftIndex] = useState(0); // 現在のドラフトのインデックス
-  const [selectedPokemon, setSelectedPokemon] = useState(null); // 選択されたポケモン
-  const [userInteracted, setUserInteracted] = useState(false); // ユーザーが操作を開始したかどうか
-  const [draftComplete, setDraftComplete] = useState(false); // ドラフトが完了したかどうか
-  const [isPopupVisible, setIsPopupVisible] = useState(true); // ポップアップの表示状態
+  const [selectedType, setSelectedType] = useState("すべて");
+  const [currentTeam, setCurrentTeam] = useState(default_draft[0][0]);
+  const [currentAction, setCurrentAction] = useState(default_draft[0][1]);
+  const [bans, setBans] = useState([]);
+  const [picks, setPicks] = useState([]);
+  const [draftIndex, setDraftIndex] = useState(0);
+  const [selectedPokemon, setSelectedPokemon] = useState(null);
+  const [userInteracted, setUserInteracted] = useState(false);
+  const [draftComplete, setDraftComplete] = useState(false);
+  const [isPopupVisible, setIsPopupVisible] = useState(true);
 
-  // 音声ファイルを事前にロード
   const banSound = useRef(new Audio("/決定ボタンを押す52.mp3"));
   const crySound = useRef(null);
 
@@ -532,25 +530,21 @@ const App = () => {
     };
   }, []);
 
-  // ポケモンタイプの変更を処理
   const handleTypeChange = (event) => {
     setSelectedType(event.target.value);
   };
 
-  // フィルタリングされたポケモンリストを取得
   const filteredPokemonList =
     selectedType === "すべて"
       ? pokemonList
       : pokemonList.filter((p) => p.type === selectedType);
 
-  // ポケモンがクリックされたときの処理
   const handlePokemonClick = (pokemon) => {
     if (draftComplete || isPokemonDisabled(pokemon)) {
       return;
     }
     setSelectedPokemon(pokemon);
 
-    // ポケモンの鳴き声を事前にロード
     if (currentAction === "PICK") {
       crySound.current = new Audio(
         `/${pokemon.name.English.toLowerCase()}.mp3`
@@ -558,7 +552,6 @@ const App = () => {
     }
   };
 
-  // 決定ボタンがクリックされたときの処理
   const handleConfirmClick = () => {
     if (selectedPokemon) {
       if (userInteracted) {
@@ -573,18 +566,17 @@ const App = () => {
         }
       }
       if (currentAction === "BAN") {
-        currentTeam.ban(selectedPokemon); // ポケモンをBANリストに追加
+        currentTeam.ban(selectedPokemon);
         setBans([...bans, selectedPokemon]);
       } else if (currentAction === "PICK") {
-        currentTeam.pick(selectedPokemon); // ポケモンをPICKリストに追加
+        currentTeam.pick(selectedPokemon);
         setPicks([...picks, selectedPokemon]);
       }
-      updateDraft(1); // 次のドラフトステップに進む
-      setSelectedPokemon(null); // 選択中のポケモンをリセット
+      updateDraft(1);
+      setSelectedPokemon(null);
     }
   };
 
-  // ドラフトのインデックスを更新する
   const updateDraft = (step) => {
     const nextIndex = draftIndex + step;
     if (nextIndex >= 0 && nextIndex < default_draft.length) {
@@ -592,11 +584,10 @@ const App = () => {
       setCurrentTeam(default_draft[nextIndex][0]);
       setCurrentAction(default_draft[nextIndex][1]);
     } else {
-      setDraftComplete(true); // ドラフトが完了した場合
+      setDraftComplete(true);
     }
   };
 
-  // ポケモンが選択不可能かどうかを判定
   const isPokemonDisabled = (pokemon) => {
     if (bans.includes(pokemon) || picks.includes(pokemon)) {
       return true;
@@ -612,7 +603,6 @@ const App = () => {
     return (ismewtwoy && ismewtwoxSelected) || (ismewtwox && ismewtwoySelected);
   };
 
-  // ポケモンのCSSクラスを取得
   const getPokemonClass = (pokemon) => {
     if (teamA.bans.includes(pokemon) || teamA.picks.includes(pokemon)) {
       return "team-a";
@@ -622,15 +612,43 @@ const App = () => {
     return "";
   };
 
-  // ポップアップを閉じる処理
   const handleClosePopup = () => {
     setIsPopupVisible(false);
   };
 
+  const handleUndoClick = () => {
+    if (draftIndex > 0) {
+      updateDraft(-1);
+      const lastAction = default_draft[draftIndex - 1];
+      const lastTeam = lastAction[0];
+      const lastActionType = lastAction[1];
+
+      if (lastActionType === "BAN") {
+        lastTeam.bans.pop();
+        setBans([...bans.slice(0, -1)]);
+      } else if (lastActionType === "PICK") {
+        lastTeam.picks.pop();
+        setPicks([...picks.slice(0, -1)]);
+      }
+    }
+  };
+
+  const handleResetClick = () => {
+    setBans([]);
+    setPicks([]);
+    teamA.bans = [];
+    teamA.picks = [];
+    teamB.bans = [];
+    teamB.picks = [];
+    setDraftIndex(0);
+    setCurrentTeam(default_draft[0][0]);
+    setCurrentAction(default_draft[0][1]);
+    setDraftComplete(false);
+  };
+
   return (
-    <div>
-      {isPopupVisible && <Popup onClose={handleClosePopup} />}{" "}
-      {/* ポップアップの表示 */}
+    <div className="app-container">
+      {isPopupVisible && <Popup onClose={handleClosePopup} />}
       {!isPopupVisible && (
         <div style={{ padding: "0 200px" }}>
           <div style={{ textAlign: "center" }}>
@@ -640,6 +658,13 @@ const App = () => {
               style={{ width: "200px" }}
             />
           </div>
+
+          <div style={{ textAlign: "center", margin: "32px 0" }}>
+            <h3 style={{ lineHeight: "1.5" }}>
+              現在のフェーズ: {currentTeam.name} - {currentAction}
+            </h3>
+          </div>
+
           <div className="dropdown">
             <select onChange={handleTypeChange} value={selectedType}>
               <option value="すべて">すべて</option>
@@ -650,8 +675,9 @@ const App = () => {
               <option value="スピード">スピード</option>
             </select>
           </div>
+
           <div style={{ display: "flex", justifyContent: "space-between" }}>
-            <div>
+            <div style={{ overflowY: "auto", maxHeight: "70vh" }}>
               <h2>Team A</h2>
               <div>
                 <h3>Bans:</h3>
@@ -685,7 +711,7 @@ const App = () => {
                             color: "white",
                             fontWeight: "bold",
                             backgroundColor: "rgba(0, 0, 0, 0.5)",
-                            padding: "5px",
+                            padding: "0px",
                             width: "80px",
                             height: "80px",
                             display: "flex",
@@ -722,7 +748,7 @@ const App = () => {
                           color: "white",
                           fontWeight: "bold",
                           backgroundColor: "rgba(0, 0, 0, 0.5)",
-                          padding: "5px",
+                          padding: "0px",
                           width: "80px",
                           height: "80px",
                           display: "flex",
@@ -742,12 +768,15 @@ const App = () => {
                   )}
               </div>
             </div>
+
             <div
               style={{
                 width: "66%",
                 display: "fix",
                 justifyContent: "center",
                 flexWrap: "wrap",
+                overflowY: "auto",
+                maxHeight: "65vh", // 画像リストのスクロール対応
               }}
             >
               {filteredPokemonList.map((pokemon) => (
@@ -778,7 +807,8 @@ const App = () => {
                 </div>
               ))}
             </div>
-            <div style={{ textAlign: "right" }}>
+
+            <div style={{ overflowY: "auto", maxHeight: "70vh" }}>
               <h2>Team B</h2>
               <div>
                 <h3>Bans:</h3>
@@ -812,7 +842,7 @@ const App = () => {
                             color: "white",
                             fontWeight: "bold",
                             backgroundColor: "rgba(0, 0, 0, 0.5)",
-                            padding: "5px",
+                            padding: "0px",
                             width: "80px",
                             height: "80px",
                             display: "flex",
@@ -851,7 +881,7 @@ const App = () => {
                           color: "white",
                           fontWeight: "bold",
                           backgroundColor: "rgba(0, 0, 0, 0.5)",
-                          padding: "5px",
+                          padding: "0px",
                           width: "80px",
                           height: "80px",
                           display: "flex",
@@ -872,8 +902,9 @@ const App = () => {
               </div>
             </div>
           </div>
+
           {!draftComplete && (
-            <div style={{ textAlign: "center", marginTop: "20px" }}>
+            <>
               <button
                 className="confirm-button"
                 onClick={handleConfirmClick}
@@ -881,8 +912,15 @@ const App = () => {
               >
                 決定
               </button>
-            </div>
+              <button className="undo-button" onClick={handleUndoClick}>
+                戻る
+              </button>
+              <button className="reset-button" onClick={handleResetClick}>
+                リセット
+              </button>
+            </>
           )}
+
           {draftComplete && <p>ドラフトは完了しました。</p>}
         </div>
       )}
